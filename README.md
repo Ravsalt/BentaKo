@@ -10,15 +10,15 @@
   <table>
     <tr>
       <td align="center">
-        <a href="Screenshot.PNG">
-          <img src="Screenshot.PNG" width="300" alt="Dashboard View" />
+        <a href="Screenshots/Screenshot.PNG">
+          <img src="Screenshots/Screenshot.PNG" width="300" alt="Dashboard View" />
           <br/>
           <sub><b>Dashboard View</b></sub>
         </a>
       </td>
       <td align="center">
-        <a href="Screenshot2.PNG">
-          <img src="Screenshot2.PNG" width="300" alt="Inventory Management" />
+        <a href="Screenshots/Screenshot2.PNG">
+          <img src="Screenshots/Screenshot2.PNG" width="300" alt="Inventory Management" />
           <br/>
           <sub><b>Inventory Management</b></sub>
         </a>
@@ -26,8 +26,8 @@
     </tr>
     <tr>
       <td align="center" colspan="2">
-        <a href="Screenshot4.PNG">
-          <img src="Screenshot4.PNG" width="300" alt="Utang List" />
+        <a href="Screenshots/Screenshot4.PNG">
+          <img src="Screenshots/Screenshot4.PNG" width="300" alt="Utang List" />
           <br/>
           <sub><b>Utang List</b></sub>
         </a>
