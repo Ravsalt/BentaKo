@@ -1,14 +1,39 @@
-<div >
-  <img src="public/images/BentaKo.png" alt="BentaKo! Logo" width="120" />
+<div align="left">
+  <img src="public/images/BentaKo.png" alt="BentaKo! Logo" width="100" style="margin-bottom: 1rem;"/>
   
   # BentaKo! - Modern Point of Sale System
   
   [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
   
+  ## 📱 App Screenshots
   
-  | [![Dashboard View](Screenshot.PNG)](Screenshot.PNG) | [![Inventory Management](Screenshot2.PNG)](Screenshot2.PNG) | [![Sales Reports](Screenshot3.PNG)](Screenshot3.PNG) |
-  |:---:|:---:|:---:|
-  | *Dashboard View* | *Inventory Management* | *Sales Reports* |
+  <table>
+    <tr>
+      <td align="center">
+        <a href="Screenshot.PNG">
+          <img src="Screenshot.PNG" width="300" alt="Dashboard View" />
+          <br/>
+          <sub><b>Dashboard View</b></sub>
+        </a>
+      </td>
+      <td align="center">
+        <a href="Screenshot2.PNG">
+          <img src="Screenshot2.PNG" width="300" alt="Inventory Management" />
+          <br/>
+          <sub><b>Inventory Management</b></sub>
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <td align="center" colspan="2">
+        <a href="Screenshot4.PNG">
+          <img src="Screenshot4.PNG" width="300" alt="Utang List" />
+          <br/>
+          <sub><b>Utang List</b></sub>
+        </a>
+      </td>
+    </tr>
+  </table>
 </div>
 
 
