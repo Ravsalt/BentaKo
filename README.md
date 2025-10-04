@@ -26,6 +26,15 @@
     </tr>
     <tr>
       <td align="center" colspan="2">
+        <a href="Screenshots/Screenshot5.PNG">
+          <img src="Screenshots/Screenshot5.PNG" width="300" alt="Reports View" />
+          <br/>
+          <sub><b>Reports View</b></sub>
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <td align="center" colspan="2">
         <a href="Screenshots/Screenshot4.PNG">
           <img src="Screenshots/Screenshot4.PNG" width="300" alt="Utang List" />
           <br/>
