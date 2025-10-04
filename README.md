@@ -1,20 +1,14 @@
-<div align="center">
-  <img src="public/images/BentaKo.png" alt="BentaKo! Logo" width="120" style="border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" />
-  <h1>BentaKo! - Modern Point of Sale System</h1>
+<div >
+  <img src="public/images/BentaKo.png" alt="BentaKo! Logo" width="120" />
+  
+  # BentaKo! - Modern Point of Sale System
   
   [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
   
-  <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin: 1.5rem 0;">
-    <a href="Screenshot.PNG">
-      <img src="Screenshot.PNG" alt="Dashboard View" style="width: 300px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'" />
-    </a>
-    <a href="Screenshot2.PNG">
-      <img src="Screenshot2.PNG" alt="Inventory Management" style="width: 300px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'" />
-    </a>
-    <a href="Screenshot3.PNG">
-      <img src="Screenshot3.PNG" alt="Sales Reports" style="width: 300px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'" />
-    </a>
-  </div>
+  
+  | [![Dashboard View](Screenshot.PNG)](Screenshot.PNG) | [![Inventory Management](Screenshot2.PNG)](Screenshot2.PNG) | [![Sales Reports](Screenshot3.PNG)](Screenshot3.PNG) |
+  |:---:|:---:|:---:|
+  | *Dashboard View* | *Inventory Management* | *Sales Reports* |
 </div>
 
 
