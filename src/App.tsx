@@ -152,7 +152,7 @@ const AppContent = () => {
       </Sidebar>
       
       <Navbar>
-        <Logo>BentaKo! 🧾</Logo>
+        <Logo>BentaKo!</Logo>
         <NavControls>
           <DailyTotal>
             <span>Daily Total:</span>
