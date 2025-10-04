@@ -1,0 +1,73 @@
+🧾 SariSmart — Single Page PRD
+🏷️ Product Name
+
+SariSmart
+A smart, simple Point-of-Sale and Inventory web app for sari-sari stores.
+
+🎯 Problem
+
+Sari-sari store owners waste time manually tracking sales and stock (writing on paper, guessing when to restock). When multiple customers buy at once, manual tracking becomes chaotic — often leading to lost sales data and wasted restock time.
+
+💡 Solution
+
+A lightweight, McDo-style web app that lets store owners tap items as they sell — instantly updating stock, recording sales, and reminding them when to restock.
+No need to write, no spreadsheets, no hassle.
+
+👥 Target Users
+
+Sari-sari store owners
+
+Small neighborhood mini-marts
+
+Family businesses handling daily cash sales
+
+🎨 User Experience (UX Flow)
+
+Login/Register Page
+→ Store name, owner name, password (optional “Remember me”)
+
+Dashboard / POS Screen (Main Page)
+→ Grid of items with prices (like McDo cashier screen)
+→ Tap = registers sale + deducts stock
+→ Sidebar: daily total ₱, low-stock alerts
+
+Inventory Page
+→ Add/edit products (name, price, stock, category)
+→ Quick “+ Add Stock” button
+
+Reports Page
+→ Daily/weekly sales chart
+→ Top 5 selling products
+
+🧠 Key Features (MVP)
+
+Tap-to-sell POS interface
+
+Auto stock deduction
+
+Low-stock notification
+
+Simple sales summary (₱ + best-sellers)
+
+Add/edit items
+
+Optional “Utang List” tracker
+
+Offline-first (works without internet, syncs later)
+
+⚙️ Tech Stack
+Layer	Technology
+Frontend	React + Tailwind (PWA support)
+Backend	Node.js + Express or PHP (for InfinityFree)
+Database	SQLite (local) / Firebase Realtime DB
+Hosting	sarisariai.ct.ws
+Optional	LocalStorage for offline caching
+🧩 Future Features
+
+Predictive restocking suggestions
+
+QR-based receipts for customers
+
+AI sales insights (“Your top seller this week: Coke”)
+
+Multi-device sync (owner + helper)
