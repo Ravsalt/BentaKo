@@ -1,48 +1,108 @@
 import React from "react";
+import { useInventoryList, useLowStockItems } from "../hooks/useInventory";
+import { useDebtList } from "../hooks/useDebt";
 
-// Mock data for demonstration
-const reportsData = [
-  {
-    category: "Inventory",
-    summary: [
-      { label: "Inventory Count", value: 10 },
-      { label: "Low Stock Items", value: 2 },
-    ],
-  },
-  {
-    category: "Sales",
-    summary: [
-      { label: "Sales Count", value: 10 },
-      { label: "Total Revenue", value: "₱25,000" },
-    ],
-  },
-  {
-    category: "Utang",
-    summary: [
-      { label: "Utang Count", value: 10 },
-      { label: "Total Amount Due", value: "₱8,000" },
-    ],
-  },
-];
+const Spinner = () => (
+  <svg
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <circle
+      cx="12"
+      cy="12"
+      r="10"
+      stroke="#09f"
+      strokeWidth="4"
+      fill="none"
+      strokeDasharray="15 80"
+      strokeLinecap="round"
+    >
+      <animateTransform
+        attributeName="transform"
+        type="rotate"
+        from="0 12 12"
+        to="360 12 12"
+        dur="1s"
+        repeatCount="indefinite"
+      />
+    </circle>
+  </svg>
+);
 
 export default function Reports() {
+  const { data: inventoryItems, isLoading: isLoadingInventory } =
+    useInventoryList();
+  const { data: lowStockItems, isLoading: isLoadingLowStock } =
+    useLowStockItems();
+  const { data: debts, isLoading: isLoadingDebts } = useDebtList();
+
+  const activeDebts = debts?.filter((debt) => debt.status !== "Paid");
+  const paidDebts = debts?.filter((debt) => debt.status === "Paid");
+
+  const totalAmountDue =
+    activeDebts?.reduce((acc, debt) => acc + debt.amount, 0) ?? 0;
+
+  const reportsData = [
+    {
+      category: "Inventory",
+      icon: "📦",
+      summary: [
+        {
+          label: "Inventory Count",
+          value: inventoryItems?.length ?? 0,
+          isLoading: isLoadingInventory,
+        },
+        {
+          label: "Low Stock Items",
+          value: lowStockItems?.length ?? 0,
+          isLoading: isLoadingLowStock,
+        },
+      ],
+    },
+    {
+      category: "Utang",
+      icon: "💸",
+      summary: [
+        {
+          label: "Active Debts",
+          value: activeDebts?.length ?? 0,
+          isLoading: isLoadingDebts,
+        },
+        {
+          label: "Paid Off",
+          value: paidDebts?.length ?? 0,
+          isLoading: isLoadingDebts,
+        },
+        {
+          label: "Total Amount Due",
+          value: `₱${totalAmountDue.toLocaleString()}`,
+          isLoading: isLoadingDebts,
+        },
+      ],
+    },
+  ];
+
   return (
     <div style={pageContainer}>
-      <h1 style={pageTitle}>Reports Dashboard</h1>
+      <h1 style={pageTitle}>Reports</h1>
       <div style={reportsGrid}>
         {reportsData.map((report) => (
           <div key={report.category} style={card}>
-            <h2 style={sectionTitle}>{report.category} Reports</h2>
-            <div>
-              <h3 style={summaryTitle}>{report.category} Summary</h3>
-              <div style={summaryGrid}>
-                {report.summary.map((item) => (
-                  <div key={item.label} style={summaryCard}>
-                    <h4 style={summaryLabel}>{item.label}</h4>
-                    <p style={summaryValue}>{item.value}</p>
-                  </div>
-                ))}
-              </div>
+            <h2 style={sectionTitle}>
+              <span style={{ marginRight: "0.5rem" }}>{report.icon}</span>
+              {report.category}
+            </h2>
+            <div style={summaryContainer}>
+              {report.summary.map((item) => (
+                <div key={item.label} style={summaryItem}>
+                  <span style={summaryLabel}>{item.label}</span>
+                  <span style={summaryValue}>
+                    {item.isLoading ? <Spinner /> : item.value}
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
         ))}
@@ -52,61 +112,66 @@ export default function Reports() {
 }
 
 // --- Styles ---
-const pageContainer = {
+
+const pageContainer: React.CSSProperties = {
   padding: "2rem",
-  fontFamily: "sans-serif",
+  fontFamily: "'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif",
+  backgroundColor: "#f4f7f9",
+  minHeight: "100vh",
 };
 
-const pageTitle = {
+const pageTitle: React.CSSProperties = {
+  fontSize: "2.5rem",
+  fontWeight: "bold",
+  color: "#2c3e50",
   marginBottom: "2rem",
   textAlign: "center",
 };
 
-const reportsGrid = {
+const reportsGrid: React.CSSProperties = {
   display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-  gap: "1.5rem",
+  gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))",
+  gap: "2rem",
 };
 
-const card = {
-  border: "1px solid #ddd",
+const card: React.CSSProperties = {
+  backgroundColor: "#ffffff",
+  borderRadius: "12px",
+  padding: "2rem",
+  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.08)",
+};
+
+const sectionTitle: React.CSSProperties = {
+  fontSize: "1.5rem",
+  fontWeight: 600,
+  color: "#34495e",
+  marginBottom: "1.5rem",
+  display: "flex",
+  alignItems: "center",
+};
+
+const summaryContainer: React.CSSProperties = {
+  display: "flex",
+  flexDirection: "column",
+  gap: "1rem",
+};
+
+const summaryItem: React.CSSProperties = {
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  padding: "1rem",
+  backgroundColor: "#f8f9fa",
   borderRadius: "8px",
-  padding: "1.5rem",
-  backgroundColor: "#fafafa",
-  boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
 };
 
-const sectionTitle = {
-  fontSize: "1.25rem",
-  marginBottom: "1rem",
-};
-
-const summaryTitle = {
+const summaryLabel: React.CSSProperties = {
   fontSize: "1rem",
-  marginBottom: "1rem",
-  color: "#333",
+  color: "#555",
 };
 
-const summaryGrid = {
-  display: "grid",
-  gap: "0.75rem",
-};
-
-const summaryCard = {
-  backgroundColor: "#fff",
-  padding: "0.75rem 1rem",
-  borderRadius: "6px",
-  border: "1px solid #eee",
-};
-
-const summaryLabel = {
-  fontSize: "0.9rem",
-  color: "#666",
-  marginBottom: "0.3rem",
-};
-
-const summaryValue = {
-  fontSize: "1.2rem",
+const summaryValue: React.CSSProperties = {
+  fontSize: "1.5rem",
   fontWeight: "bold",
-  color: "#222",
+  color: "#2c3e50",
 };
