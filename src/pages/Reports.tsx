@@ -1,6 +1,7 @@
 import React from "react";
 import { useInventoryList, useLowStockItems } from "../hooks/useInventory";
 import { useDebtList } from "../hooks/useDebt";
+import { useSalesList } from "../hooks/useSales";
 
 const Spinner = () => (
   <svg
@@ -32,17 +33,16 @@ const Spinner = () => (
 );
 
 export default function Reports() {
-  const { data: inventoryItems, isLoading: isLoadingInventory } =
-    useInventoryList();
-  const { data: lowStockItems, isLoading: isLoadingLowStock } =
-    useLowStockItems();
+  const { data: inventoryItems, isLoading: isLoadingInventory } = useInventoryList();
+  const { data: lowStockItems, isLoading: isLoadingLowStock } = useLowStockItems();
   const { data: debts, isLoading: isLoadingDebts } = useDebtList();
+  const { data: sales, isLoading: isLoadingSales } = useSalesList();
 
   const activeDebts = debts?.filter((debt) => debt.status !== "Paid");
   const paidDebts = debts?.filter((debt) => debt.status === "Paid");
-
-  const totalAmountDue =
-    activeDebts?.reduce((acc, debt) => acc + debt.amount, 0) ?? 0;
+  const totalAmountDue = activeDebts?.reduce((acc, debt) => acc + debt.amount, 0) ?? 0;
+  const totalRevenue = sales?.reduce((acc, item) => acc + (item.price * item.quantity), 0) ?? 0;
+  const itemsSoldCount = sales?.reduce((acc, item) => acc + item.quantity, 0) ?? 0;
 
   const reportsData = [
     {
@@ -58,6 +58,22 @@ export default function Reports() {
           label: "Low Stock Items",
           value: lowStockItems?.length ?? 0,
           isLoading: isLoadingLowStock,
+        },
+      ],
+    },
+    {
+      category: "Sales",
+      icon: "📈",
+      summary: [
+        {
+          label: "Items Sold",
+          value: itemsSoldCount,
+          isLoading: isLoadingSales,
+        },
+        {
+          label: "Total Revenue",
+          value: `₱${totalRevenue.toLocaleString()}`,
+          isLoading: isLoadingSales,
         },
       ],
     },

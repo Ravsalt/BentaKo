@@ -7,7 +7,7 @@ import { useInventoryList } from './hooks/useInventory';
 import type { InventoryItem } from './types/inventory';
 
 // Import theme
-import { theme } from './theme';
+import { AppThemeProvider } from './contexts/ThemeContext';
 // Update these imports to match your actual filenames
 import Dashboard from './pages/Dashboard';
 import Inventory from './pages/Inventory';
@@ -196,11 +196,11 @@ const App = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider theme={theme}>
+      <AppThemeProvider>
         <Router>
           <AppContent />
         </Router>
-      </ThemeProvider>
+      </AppThemeProvider>
     </QueryClientProvider>
   );
 };
