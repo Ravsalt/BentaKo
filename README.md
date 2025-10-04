@@ -1,8 +1,21 @@
-# 🧾 BentaKo! - Modern Point of Sale System
-
-![BentaKo! POS Dashboard](Screenshot.PNG)
-![BentaKo! POS Dashboard](Screenshot2.PNG)
-![BentaKo! POS Dashboard](Screenshot3.PNG)
+<div align="center">
+  <img src="public/images/BentaKo.png" alt="BentaKo! Logo" width="120" style="border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" />
+  <h1>BentaKo! - Modern Point of Sale System</h1>
+  
+  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+  
+  <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin: 1.5rem 0;">
+    <a href="Screenshot.PNG">
+      <img src="Screenshot.PNG" alt="Dashboard View" style="width: 300px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'" />
+    </a>
+    <a href="Screenshot2.PNG">
+      <img src="Screenshot2.PNG" alt="Inventory Management" style="width: 300px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'" />
+    </a>
+    <a href="Screenshot3.PNG">
+      <img src="Screenshot3.PNG" alt="Sales Reports" style="width: 300px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'" />
+    </a>
+  </div>
+</div>
 
 
 A modern, responsive point-of-sale (POS) system built with React, TypeScript, and Vite. BentaKo! helps small businesses manage sales, inventory, and transactions with ease.
@@ -64,4 +77,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - Built with ❤️ for small business owners
 - Inspired by the need for simple, effective POS solutions
-```
