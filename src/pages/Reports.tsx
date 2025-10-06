@@ -3,6 +3,14 @@ import { useInventoryList, useLowStockItems } from "../hooks/useInventory";
 import { useDebtList } from "../hooks/useDebt";
 import { useSalesList } from "../hooks/useSales";
 
+// Error component for displaying error states
+const ErrorIndicator = ({ message }: { message: string }) => (
+  <span style={{ color: '#ef4444', display: 'flex', alignItems: 'center', gap: '4px' }}>
+    <span>⚠️</span>
+    <span>{message}</span>
+  </span>
+);
+
 const Spinner = () => (
   <svg
     width="24"
@@ -33,16 +41,51 @@ const Spinner = () => (
 );
 
 export default function Reports() {
-  const { data: inventoryItems, isLoading: isLoadingInventory } = useInventoryList();
-  const { data: lowStockItems, isLoading: isLoadingLowStock } = useLowStockItems();
-  const { data: debts, isLoading: isLoadingDebts } = useDebtList();
-  const { data: sales, isLoading: isLoadingSales } = useSalesList();
+  const { 
+    data: inventoryItems, 
+    isLoading: isLoadingInventory, 
+    error: inventoryError 
+  } = useInventoryList();
+  
+  const { 
+    data: lowStockItems, 
+    isLoading: isLoadingLowStock,
+    error: lowStockError
+  } = useLowStockItems();
+  
+  const { 
+    data: debts, 
+    isLoading: isLoadingDebts,
+    error: debtsError
+  } = useDebtList();
+  
+  const { 
+    data: sales, 
+    isLoading: isLoadingSales,
+    error: salesError
+  } = useSalesList();
+  
+  // Memoized out of stock count
+  const outOfStockCount = React.useMemo(() => {
+    if (!inventoryItems) return 0;
+    console.log('Inventory items:', inventoryItems); // Debug log
+    const outOfStock = inventoryItems.filter(item => item.stock <= 0);
+    console.log('Out of stock items:', outOfStock); // Debug log
+    return outOfStock.length;
+  }, [inventoryItems]);
 
   const activeDebts = debts?.filter((debt) => debt.status !== "Paid");
   const paidDebts = debts?.filter((debt) => debt.status === "Paid");
   const totalAmountDue = activeDebts?.reduce((acc, debt) => acc + debt.amount, 0) ?? 0;
   const totalRevenue = sales?.reduce((acc, item) => acc + (item.price * item.quantity), 0) ?? 0;
   const itemsSoldCount = sales?.reduce((acc, item) => acc + item.quantity, 0) ?? 0;
+
+  // Display error if any
+  const error = inventoryError || lowStockError || debtsError || salesError;
+  
+  if (error) {
+    console.error('Error in Reports component:', error);
+  }
 
   const reportsData = [
     {
@@ -59,6 +102,12 @@ export default function Reports() {
           value: lowStockItems?.length ?? 0,
           isLoading: isLoadingLowStock,
         },
+        {
+          label: "Out of Stock",
+          value: outOfStockCount,
+          isLoading: isLoadingInventory,
+          error: inventoryError ? "Error loading inventory" : undefined,
+        },
       ],
     },
     {
@@ -68,6 +117,11 @@ export default function Reports() {
         {
           label: "Items Sold",
           value: itemsSoldCount,
+          isLoading: isLoadingSales,
+        },
+        {
+          label: "Daily Sales",
+          value: `₱${sales?.reduce((acc, item) => acc + (item.price * item.quantity), 0)?.toLocaleString()}`,
           isLoading: isLoadingSales,
         },
         {
@@ -115,7 +169,13 @@ export default function Reports() {
                 <div key={item.label} style={summaryItem}>
                   <span style={summaryLabel}>{item.label}</span>
                   <span style={summaryValue}>
-                    {item.isLoading ? <Spinner /> : item.value}
+                    {item.isLoading ? (
+                      <Spinner />
+                    ) : item.error ? (
+                      <ErrorIndicator message={item.error} />
+                    ) : (
+                      item.value
+                    )}
                   </span>
                 </div>
               ))}
@@ -127,7 +187,11 @@ export default function Reports() {
   );
 }
 
-// --- Styles ---
+const metricValueStyle: React.CSSProperties = {
+    fontSize: "1.5rem",
+    fontWeight: "bold",
+    color: "#2c3e50",
+  };
 
 const pageContainer: React.CSSProperties = {
   padding: "2rem",

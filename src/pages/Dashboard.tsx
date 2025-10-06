@@ -225,7 +225,7 @@ const Dashboard = () => {
       {/* Main Products Grid */}
       <div style={{ flex: 1, padding: '1.5rem', overflowY: 'auto' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-          <h1 style={{ margin: 0 }}>Dashboard</h1>
+          <h1 style={{ margin: 0, color: '#2c3e50' }}>Dashboard</h1>
           <CartButton onClick={() => setIsCartOpen(!isCartOpen)}>
             <FiShoppingCart size={20} />
             <span>Cart ({cart.reduce((sum, item) => sum + item.quantity, 0)})</span>

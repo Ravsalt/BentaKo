@@ -76,26 +76,38 @@ export const ErrorMessage = styled.p`
 `;
 
 export const CartSidebar = styled.div<{ isOpen: boolean }>`
-  width: ${({ isOpen }) => (isOpen ? '350px' : '0')};
-  height: 100vh;
   position: fixed;
   top: 0;
   right: 0;
+  height: 100vh;
+  width: ${({ isOpen }) => (isOpen ? '100%' : '0')};
+  max-width: 350px;
   background-color: ${({ theme }) => theme.colors.white};
   box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
-  transition: width 0.3s ease;
+  transition: all 0.3s ease;
   overflow: hidden;
   z-index: 1000;
+  display: flex;
+  flex-direction: column;
+
+  @media (max-width: 480px) {
+  }
 `;
 
 export const CartHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: ${({ theme }) => theme.colors.background};
+  border-top: 1px solid ${({ theme }) => theme.colors.border};
+  position: sticky;
+  top: 0;
+  z-index: 1;
 `;
 
 export const CartTitle = styled.h2`
+{{ ... }}
   margin: 0;
   color: ${({ theme }) => theme.colors.text};
 `;
@@ -128,6 +140,22 @@ export const CartItemsWrapper = styled.div`
   flex: 1;
   overflow-y: auto;
   margin-bottom: 1.5rem;
+  padding: 0 1rem;
+  -webkit-overflow-scrolling: touch;
+  
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: ${({ theme }) => theme.colors.background};
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: ${({ theme }) => theme.colors.primary};
+    border-radius: 4px;
+  }
 `;
 
 export const CartItem = styled.div`

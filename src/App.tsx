@@ -4,6 +4,7 @@ import { FiHome, FiPackage, FiPieChart, FiCreditCard, FiSettings, FiPlusCircle, 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import { useInventoryList } from './hooks/useInventory';
+import { useSalesList } from './hooks/useSales';
 import type { InventoryItem } from './types/inventory';
 
 // Import theme
@@ -154,10 +155,31 @@ const AppContent = () => {
       <Navbar>
         <Logo>BentaKo!</Logo>
         <NavControls>
-          <DailyTotal>
-            <span>Daily Total:</span>
-            <span>₱0.00</span>
-          </DailyTotal>
+<>
+            <DailyTotal>
+              <span>Daily Sales:</span>
+              <span>₱{
+                useSalesList().data
+                  ?.filter(sale => {
+                    const saleDate = new Date(sale.date);
+                    const today = new Date();
+                    return saleDate.getDate() === today.getDate() &&
+                          saleDate.getMonth() === today.getMonth() &&
+                          saleDate.getFullYear() === today.getFullYear();
+                  })
+                  .reduce((total, sale) => total + (sale.price * sale.quantity || 0), 0)
+                  .toFixed(2) || '0.00'
+              }</span>
+            </DailyTotal>
+            <DailyTotal>
+              <span>Total Sales:</span>
+              <span>₱{
+                useSalesList().data
+                  ?.reduce((total, sale) => total + (sale.price * sale.quantity || 0), 0)
+                  .toFixed(2) || '0.00'
+              }</span>
+            </DailyTotal>
+          </>
         </NavControls>
       </Navbar>
       

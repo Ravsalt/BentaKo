@@ -95,6 +95,15 @@ export const FormGroup = styled.div`
   margin-bottom: 1rem;
 `;
 
+export const FormActions = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid ${({ theme }) => theme.colors.background};
+`;
+
 export const Input = styled.input`
   width: 100%;
   padding: 0.5rem;
