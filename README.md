@@ -27,26 +27,19 @@
 - Intuitive product catalog with search and filtering
 - Quick add to cart with quantity controls
 - Real-time cart management
-- Multiple payment methods support
-- Receipt generation
 
 ### 📦 Inventory Management
 - Real-time inventory tracking
 - Low stock alerts
 - Product categories and variants
-- Barcode/QR code scanning support
-- Import/export functionality
 
 ### 📊 Reporting
 - Sales reports (daily, weekly, monthly)
 - Product performance tracking
 - Revenue overview
-- Exportable reports (PDF, Excel)
 
 ### 💳 Customer Management
-- Customer profiles
 - Purchase history
-- Loyalty programs
 - Credit tracking (Utang system)
 
 ### 🎨 Modern UI/UX
@@ -131,7 +124,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Built with ❤️ for small business owners
 - Inspired by the need for simple, effective POS solutions
 - Special thanks to all contributors and open-source maintainers
-
+/
 
 ## 📬 Contact
 
