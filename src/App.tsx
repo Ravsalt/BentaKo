@@ -1,11 +1,9 @@
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
-import styled, { ThemeProvider } from 'styled-components';
-import { FiHome, FiPackage, FiPieChart, FiCreditCard, FiSettings, FiPlusCircle, FiWifi, FiWifiOff } from 'react-icons/fi';
+import styled from 'styled-components';
+import { FiHome, FiPackage, FiPieChart, FiCreditCard, FiSettings, FiWifi, FiWifiOff } from 'react-icons/fi';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
-import { useInventoryList } from './hooks/useInventory';
 import { useSalesList } from './hooks/useSales';
-import type { InventoryItem } from './types/inventory';
 
 // Import theme
 import { AppThemeProvider } from './contexts/ThemeContext';
