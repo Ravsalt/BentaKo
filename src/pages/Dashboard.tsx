@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiShoppingCart, FiPlus, FiMinus, FiTrash2, FiDollarSign, FiSearch } from 'react-icons/fi';
 import { useInventoryList, useUpdateInventoryItem } from '../hooks/useInventory';
@@ -12,7 +12,6 @@ import {
   ModalPrice, ModalStock, StockIndicator, ModalQuantityWrapper, ModalQuantityControl,
   ModalQuantityButton, ModalQuantityInputWrapper, ModalQuantityInput, ModalFooter,
   CancelButton, AddToCartButton,
-  EmptyCartMessage, ModalQuantityDisplay, CustomAmountLabel
 } from '../components/dashboard/styles';
 import type { InventoryItem } from '../types/inventory';
 
@@ -163,9 +162,6 @@ const Dashboard = () => {
   };
   
   // Quick add to cart (for single click add)
-  const addToCart = (product: InventoryItem) => {
-    openProductModal(product);
-  };
 
   // Update item quantity in cart
   const updateQuantity = (id: string, newQuantity: number) => {

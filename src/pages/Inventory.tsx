@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import { useRef } from "react";
 import type { InventoryItem } from "../types/inventory";
 import { useInventoryList } from "../hooks/useInventory";
 import AddItemModal from "../components/add-item-modal";
