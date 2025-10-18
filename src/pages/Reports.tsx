@@ -194,6 +194,14 @@ export default function Reports() {
           icon: "💳",
           highlight: totalAmountDue > 0,
         },
+        {
+          label: "Total Amount Paid",
+          value: `₱${(paidDebts?.reduce((acc, debt) => acc + debt.amount, 0) ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+          isLoading: isLoadingDebts,
+          error: debtsError ? "Error loading debts" : undefined,
+          icon: "✅",
+          highlight: false,
+        }
       ],
     },
   ];
