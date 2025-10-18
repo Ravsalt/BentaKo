@@ -41,34 +41,40 @@ const Spinner = () => (
   </svg>
 );
 
-// Helper function to get insights
-const getInventoryInsight = (_total: number, lowStock: number, outOfStock: number) => {
+// Helper functions for insights
+const getInventoryInsight = (_total: number, lowStock: number, outOfStock: number, inventoryValue?: number) => {
   if (outOfStock > 0) {
     return `${outOfStock} ${outOfStock === 1 ? 'item needs' : 'items need'} restocking urgently`;
   }
   if (lowStock > 0) {
     return `${lowStock} ${lowStock === 1 ? 'item is' : 'items are'} running low`;
   }
-  return "All items are well-stocked! 🎉";
+  return inventoryValue ? `Total inventory value: ₱${inventoryValue.toLocaleString()}` : "All items are well-stocked! 🎉";
 };
 
-const getSalesInsight = (revenue: number, itemsSold: number) => {
-  if (revenue === 0) {
-    return "No sales recorded yet. Time to start selling!";
-  }
-  const avgPrice = revenue / itemsSold;
-  return `Average sale value: ₱${avgPrice.toFixed(2)}`;
+const getSalesInsight = (revenue: number, _itemsSold: number, avgOrderValue: number, trend: number) => {
+  if (revenue === 0) return "No sales recorded yet. Time to start selling!";
+  
+  const trendIcon = trend > 0 ? '📈' : trend < 0 ? '📉' : '➡️';
+  const trendText = trend !== 0 ? `${Math.abs(trend)}% ${trend > 0 ? 'increase' : 'decrease'} from last period` : 'stable';
+  
+  return `Avg. order: ₱${avgOrderValue.toFixed(2)} • ${trendIcon} ${trendText}`;
 };
 
-const getDebtsInsight = (active: number, totalDue: number) => {
-  if (active === 0) {
-    return "All caught up! No outstanding debts 🎊";
-  }
-  if (totalDue > 0) {
-    const avgDebt = totalDue / active;
-    return `Average debt: ₱${avgDebt.toFixed(2)}`;
-  }
-  return `${active} ${active === 1 ? 'debt' : 'debts'} to follow up on`;
+const getDebtsInsight = (active: number, totalDue: number, avgDaysToPay: number) => {
+  if (active === 0) return "All caught up! No outstanding debts 🎊";
+  
+  const insights = [];
+  if (totalDue > 0) insights.push(`₱${totalDue.toLocaleString()} total due`);
+  if (avgDaysToPay > 0) insights.push(`Avg. ${avgDaysToPay}d to pay`);
+  
+  return insights.length > 0 ? insights.join(' • ') : `${active} ${active === 1 ? 'debt' : 'debts'} to follow up`;
+};
+
+// Helper to calculate percentage change
+const calculateTrend = (current: number, previous: number) => {
+  if (previous === 0) return current > 0 ? 100 : 0;
+  return Math.round(((current - previous) / previous) * 100);
 };
 
 export default function Reports() {
@@ -96,6 +102,32 @@ export default function Reports() {
     error: salesError
   } = useSalesList();
   
+  // Date helper functions
+  const isToday = (date: Date) => {
+    const today = new Date();
+    return date.toDateString() === today.toDateString();
+  };
+
+  const isThisWeek = (date: Date) => {
+    const today = new Date();
+    const firstDayOfWeek = new Date(today);
+    firstDayOfWeek.setDate(today.getDate() - today.getDay());
+    firstDayOfWeek.setHours(0, 0, 0, 0);
+    return date >= firstDayOfWeek;
+  };
+
+  const isThisMonth = (date: Date) => {
+    const today = new Date();
+    return date.getMonth() === today.getMonth() && 
+           date.getFullYear() === today.getFullYear();
+  };
+
+  const calculateSalesTotal = (filterFn: (date: Date) => boolean) => {
+    return sales
+      ?.filter(sale => filterFn(new Date(sale.date)))
+      .reduce((acc, sale) => acc + (sale.price * sale.quantity), 0) ?? 0;
+  };
+
   const outOfStockCount = React.useMemo(() => {
     if (!inventoryItems) return 0;
     return inventoryItems.filter(item => item.stock <= 0).length;
@@ -106,8 +138,56 @@ export default function Reports() {
   const totalAmountDue = activeDebts?.reduce((acc, debt) => acc + debt.amount, 0) ?? 0;
   const totalRevenue = sales?.reduce((acc, item) => acc + (item.price * item.quantity), 0) ?? 0;
   const itemsSoldCount = sales?.reduce((acc, item) => acc + item.quantity, 0) ?? 0;
+  
+  // Enhanced metrics calculation
+  const todaysSales = calculateSalesTotal(isToday);
+  const weeklySales = calculateSalesTotal(isThisWeek);
+  const monthlySales = calculateSalesTotal(isThisMonth);
+  
+  // Calculate previous period for trends
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  const lastWeek = new Date();
+  lastWeek.setDate(lastWeek.getDate() - 7);
+  const lastMonth = new Date();
+  lastMonth.setMonth(lastMonth.getMonth() - 1);
+  
+  const yesterdaySales = sales
+    ?.filter(sale => new Date(sale.date).toDateString() === yesterday.toDateString())
+    .reduce((acc, sale) => acc + (sale.price * sale.quantity), 0) ?? 0;
+    
+  const lastWeekSales = sales
+    ?.filter(sale => {
+      const saleDate = new Date(sale.date);
+      const weekAgo = new Date();
+      weekAgo.setDate(weekAgo.getDate() - 14); // Two weeks ago
+      return saleDate >= weekAgo && saleDate < lastWeek;
+    })
+    .reduce((acc, sale) => acc + (sale.price * sale.quantity), 0) ?? 0;
+    
+  // Calculate trends
+  const dailyTrend = calculateTrend(todaysSales, yesterdaySales);
+  const weeklyTrend = calculateTrend(weeklySales, lastWeekSales);
+  
+  // Calculate average order value
+  const totalOrders = sales?.length || 1; // Avoid division by zero
+  const avgOrderValue = totalRevenue / totalOrders;
+  
+  // Inventory metrics
+  const inventoryValue = inventoryItems?.reduce((acc, item) => acc + (item.price * item.stock), 0) ?? 0;
+  
+  // Debt metrics
+  const paidDebtsWithDate = paidDebts?.filter(d => d.paidDate) || [];
+  const avgDaysToPay = paidDebtsWithDate.length > 0
+    ? Math.round(paidDebtsWithDate.reduce((acc, debt) => {
+        const created = new Date(debt.createdAt);
+        const paid = new Date(debt.paidDate!);
+        const diffTime = Math.abs(paid.getTime() - created.getTime());
+        return acc + Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      }, 0) / paidDebtsWithDate.length)
+    : 0;
 
-  const reportsData = [
+  const reportsData: ReportData[] = [
     {
       category: "Inventory Overview",
       icon: "📦",
@@ -115,7 +195,8 @@ export default function Reports() {
       insight: getInventoryInsight(
         inventoryItems?.length ?? 0,
         lowStockItems?.length ?? 0,
-        outOfStockCount
+        outOfStockCount,
+        inventoryValue
       ),
       summary: [
         {
@@ -126,7 +207,14 @@ export default function Reports() {
           icon: "📋",
         },
         {
-          label: "Low Stock Items",
+          label: "Inventory Value",
+          value: `₱${inventoryValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+          isLoading: isLoadingInventory,
+          error: inventoryError ? "Error loading inventory" : undefined,
+          icon: "💰",
+        },
+        {
+          label: "Low Stock",
           value: lowStockItems?.length ?? 0,
           isLoading: isLoadingLowStock,
           error: lowStockError ? "Error loading low stock items" : undefined,
@@ -147,21 +235,50 @@ export default function Reports() {
       category: "Sales Performance",
       icon: "💰",
       color: "#27ae60",
-      insight: getSalesInsight(totalRevenue, itemsSoldCount),
+      insight: getSalesInsight(totalRevenue, itemsSoldCount, avgOrderValue, dailyTrend),
       summary: [
         {
-          label: "Total Revenue",
-          value: `₱${totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+          label: "Today's Sales",
+          value: todaysSales.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
           isLoading: isLoadingSales,
           error: salesError ? "Error loading sales data" : undefined,
-          icon: "💵",
+          icon: "🛒",
+          prefix: "₱",
+          trend: dailyTrend,
+          trendLabel: 'vs yesterday'
         },
         {
-          label: "Items Sold",
-          value: itemsSoldCount,
+          label: "This Week's Sales",
+          value: weeklySales.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+          isLoading: isLoadingSales,
+          error: salesError ? "Error loading sales data" : undefined,
+          icon: "📆",
+          prefix: "₱",
+          trend: weeklyTrend,
+          trendLabel: 'vs last week'
+        },
+        {
+          label: "This Month's Sales",
+          value: monthlySales.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+          isLoading: isLoadingSales,
+          error: salesError ? "Error loading sales data" : undefined,
+          icon: "📅",
+          prefix: "₱"
+        },
+        {
+          label: "Avg. Order Value",
+          value: avgOrderValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
           isLoading: isLoadingSales,
           error: salesError ? "Error loading sales data" : undefined,
           icon: "📊",
+          prefix: "₱"
+        },
+        {
+          label: "Total Items Sold",
+          value: itemsSoldCount.toLocaleString(),
+          isLoading: isLoadingSales,
+          error: salesError ? "Error loading sales data" : undefined,
+          icon: "📦"
         },
       ],
     },
@@ -169,7 +286,7 @@ export default function Reports() {
       category: "Debt Tracking",
       icon: "📝",
       color: "#e67e22",
-      insight: getDebtsInsight(activeDebts?.length ?? 0, totalAmountDue),
+      insight: getDebtsInsight(activeDebts?.length ?? 0, totalAmountDue, avgDaysToPay),
       summary: [
         {
           label: "Active Debts",
@@ -180,13 +297,6 @@ export default function Reports() {
           highlight: (activeDebts?.length ?? 0) > 0,
         },
         {
-          label: "Paid Off",
-          value: paidDebts?.length ?? 0,
-          isLoading: isLoadingDebts,
-          error: debtsError ? "Error loading debts" : undefined,
-          icon: "✅",
-        },
-        {
           label: "Total Amount Due",
           value: `₱${totalAmountDue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
           isLoading: isLoadingDebts,
@@ -195,12 +305,27 @@ export default function Reports() {
           highlight: totalAmountDue > 0,
         },
         {
-          label: "Total Amount Paid",
+          label: "Paid This Month",
           value: `₱${(paidDebts?.reduce((acc, debt) => acc + debt.amount, 0) ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
           isLoading: isLoadingDebts,
           error: debtsError ? "Error loading debts" : undefined,
           icon: "✅",
-          highlight: false,
+        },
+        {
+          label: "Avg. Days to Pay",
+          value: avgDaysToPay > 0 ? `${avgDaysToPay} days` : 'N/A',
+          isLoading: isLoadingDebts,
+          error: debtsError ? "Error loading debts" : undefined,
+          icon: "⏱️"
+        },
+        {
+          label: "Payment Success Rate",
+          value: debts && debts.length > 0 && paidDebts
+            ? `${Math.round((paidDebts.length / debts.length) * 100)}%` 
+            : 'N/A',
+          isLoading: isLoadingDebts,
+          error: debtsError ? "Error loading debts" : undefined,
+          icon: "📊"
         }
       ],
     },
@@ -225,27 +350,57 @@ export default function Reports() {
             </div>
             
             <div style={summaryContainer}>
-              {report.summary.map((item) => (
-                <div 
-                  key={item.label} 
-                  style={{
-                    ...summaryItem                  }}
-                >
-                  <div style={labelContainer}>
-                    <span style={itemIcon}>{item.icon}</span>
-                    <span style={summaryLabel}>{item.label}</span>
+              {report.summary.map((item: SummaryItem) => {
+                const hasHighlight = 'highlight' in item ? item.highlight : false;
+                const hasTrend = 'trend' in item && item.trend !== undefined;
+                
+                return (
+                  <div 
+                    key={item.label} 
+                    style={{
+                      ...summaryItem,
+                      borderLeft: `4px solid ${report.color}`,
+                      position: 'relative',
+                      overflow: 'hidden',
+                    }}
+                  >
+                    {/* Highlight overlay */}
+                    {hasHighlight && <div style={highlightStyle(true)} />}
+                    
+                    <div style={labelContainer}>
+                      <span style={itemIcon}>{item.icon}</span>
+                      <span style={summaryLabel}>{item.label}</span>
+                    </div>
+                    
+                    <span style={summaryValue}>
+                      {item.isLoading ? (
+                        <Spinner />
+                      ) : item.error ? (
+                        <ErrorIndicator message={item.error} />
+                      ) : (
+                        <>
+                          {('prefix' in item && item.prefix) || ''}{item.value}
+                          {hasTrend && (
+                            <span style={{
+                              ...trendStyle(item.trend),
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '0.25rem',
+                              fontSize: '0.8rem',
+                              fontWeight: 500,
+                              marginTop: '0.25rem',
+                              color: item.trend > 0 ? '#10b981' : item.trend < 0 ? '#ef4444' : '#6b7280'
+                            }}>
+                              {item.trend > 0 ? '↑' : item.trend < 0 ? '↓' : '→'}
+                              {Math.abs(item.trend)}% {item.trendLabel}
+                            </span>
+                          )}
+                        </>
+                      )}
+                    </span>
                   </div>
-                  <span style={summaryValue}>
-                    {item.isLoading ? (
-                      <Spinner />
-                    ) : item.error ? (
-                      <ErrorIndicator message={item.error} />
-                    ) : (
-                      item.value
-                    )}
-                  </span>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         ))}
@@ -259,6 +414,42 @@ export default function Reports() {
       </div>
     </div>
   );
+}
+
+// Define base type for summary items
+interface BaseSummaryItem {
+  label: string;
+  value: string | number;
+  isLoading: boolean;
+  error?: string;
+  icon: string;
+  highlight?: boolean;
+  prefix?: string;
+}
+
+// Define type for items with trend data
+interface SummaryItemWithTrend extends BaseSummaryItem {
+  trend: number;
+  trendLabel: string;
+}
+
+// Define type for items without trend data
+interface SummaryItemWithoutTrend extends Omit<BaseSummaryItem, 'prefix'> {
+  trend?: never;
+  trendLabel?: never;
+  prefix?: string;
+}
+
+// Combined type for all summary items
+type SummaryItem = SummaryItemWithTrend | SummaryItemWithoutTrend;
+
+// Define report data type
+interface ReportData {
+  category: string;
+  icon: string;
+  color: string;
+  insight: string;
+  summary: SummaryItem[];
 }
 
 const pageContainer: React.CSSProperties = {
@@ -336,7 +527,9 @@ const summaryItem: React.CSSProperties = {
   padding: "1rem",
   backgroundColor: "#f8f9fa",
   borderRadius: "8px",
-  transition: "background-color 0.2s ease",
+  transition: "all 0.2s ease",
+  position: "relative",
+  overflow: "hidden",
 };
 
 
@@ -344,6 +537,8 @@ const labelContainer: React.CSSProperties = {
   display: "flex",
   alignItems: "center",
   gap: "0.5rem",
+  position: "relative",
+  zIndex: 1,
 };
 
 const itemIcon: React.CSSProperties = {
@@ -360,7 +555,34 @@ const summaryValue: React.CSSProperties = {
   fontSize: "1.4rem",
   fontWeight: "700",
   color: "#2c3e50",
+  position: "relative",
+  zIndex: 1,
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "flex-end",
 };
+
+const trendStyle = (trend?: number): React.CSSProperties => ({
+  fontSize: "0.8rem",
+  fontWeight: "500",
+  color: trend === undefined ? "#6b7280" : trend > 0 ? "#10b981" : trend < 0 ? "#ef4444" : "#6b7280",
+  display: "flex",
+  alignItems: "center",
+  gap: "0.25rem",
+  marginTop: "0.25rem",
+});
+
+const highlightStyle = (highlight?: boolean): React.CSSProperties => ({
+  position: "absolute",
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  backgroundColor: highlight ? "rgba(255, 247, 205, 0.3)" : "transparent",
+  border: highlight ? "1px solid #fef08a" : "1px solid transparent",
+  borderRadius: "8px",
+  transition: "all 0.2s ease",
+});
 
 const footerNote: React.CSSProperties = {
   marginTop: "2rem",
