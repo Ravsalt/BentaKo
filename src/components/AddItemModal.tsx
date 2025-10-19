@@ -108,6 +108,7 @@ interface FormData {
   minStockLevel: string;
   image: string;
   description: string;
+  category: string;
 }
 
 const initialFormData: FormData = {
@@ -116,7 +117,8 @@ const initialFormData: FormData = {
   stock: '0',
   minStockLevel: '',
   image: '',
-  description: ''
+  description: '',
+  category: '',
 };
 
 const AddItemModal = forwardRef<AddItemModalRef, AddItemModalProps>(({ onItemAdded }, ref) => {
@@ -177,7 +179,7 @@ const AddItemModal = forwardRef<AddItemModalRef, AddItemModalProps>(({ onItemAdd
     // Parse numeric values with proper null/undefined handling
     const price = parseFloat(formData.price) || 0;
     const stock = parseInt(formData.stock, 10) || 0;
-    const minStockLevel = formData.minStockLevel ? parseInt(formData.minStockLevel, 10) : undefined;
+    const minStockLevel = formData.minStockLevel ? parseInt(formData.minStockLevel, 10) : 0;
     
     try {
       await createItem.mutateAsync({
@@ -186,7 +188,8 @@ const AddItemModal = forwardRef<AddItemModalRef, AddItemModalProps>(({ onItemAdd
         stock: stock,
         minStockLevel: minStockLevel,
         image: formData.image || undefined,
-        description: formData.description || undefined,
+        description: formData.description || '',
+        category: formData.category || '',
       });
       
       // Reset form
