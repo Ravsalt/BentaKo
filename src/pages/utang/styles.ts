@@ -2,6 +2,10 @@ import styled from 'styled-components';
 
 export const UtangWrapper = styled.div`
   padding: 2rem;
+  
+  @media (max-width: 767px) {
+    padding: 1rem;
+  }
 `;
 
 export const Header = styled.div`
@@ -9,11 +13,22 @@ export const Header = styled.div`
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1.5rem;
+  gap: 1rem;
+  
+  @media (max-width: 767px) {
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+  }
 `;
 
 export const Title = styled.h2`
   margin: 0;
   color: ${({ theme }) => theme.colors.text};
+  font-size: 1.75rem;
+  
+  @media (max-width: 767px) {
+    font-size: 1.5rem;
+  }
 `;
 
 export const AddButton = styled.button`
@@ -29,6 +44,10 @@ export const Table = styled.table`
   width: 100%;
   border-collapse: collapse;
   margin-top: 1rem;
+  
+  @media (max-width: 767px) {
+    display: none; /* Hide table on mobile, use card layout instead */
+  }
 `;
 
 export const Th = styled.th`
@@ -58,6 +77,8 @@ export const ActionButton = styled.button`
   cursor: pointer;
   background-color: ${({ theme }) => theme.colors.primary};
   color: #fff;
+  font-size: 0.875rem;
+  transition: all 0.2s;
 
   &.delete {
     background-color: ${({ theme }) => theme.colors.error};
@@ -65,6 +86,16 @@ export const ActionButton = styled.button`
 
   &.paid {
     background-color: ${({ theme }) => theme.colors.success};
+  }
+  
+  &:active {
+    transform: scale(0.95);
+  }
+  
+  @media (max-width: 767px) {
+    padding: 0.5rem 0.75rem;
+    margin-right: 0.25rem;
+    margin-bottom: 0.25rem;
   }
 `;
 
@@ -89,6 +120,12 @@ export const ModalContent = styled.div`
   max-width: 500px;
   max-height: 90vh;
   overflow-y: auto;
+  
+  @media (max-width: 767px) {
+    padding: 1.5rem;
+    margin: 1rem;
+    max-width: calc(100% - 2rem);
+  }
 `;
 
 export const FormGroup = styled.div`
@@ -124,4 +161,72 @@ export const Select = styled.select`
   margin-top: 0.25rem;
   background-color: ${({ theme }) => theme.colors.background};
   color: ${({ theme }) => theme.colors.text};
+`;
+
+// Mobile card layout
+export const MobileCardList = styled.div`
+  display: none;
+  
+  @media (max-width: 767px) {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+`;
+
+export const DebtCard = styled.div`
+  background: ${({ theme }) => theme.colors.white};
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border-left: 4px solid ${({ theme }) => theme.colors.primary};
+`;
+
+export const CardHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.75rem;
+  gap: 0.5rem;
+`;
+
+export const DebtorName = styled.h3`
+  margin: 0;
+  font-size: 1.1rem;
+  color: ${({ theme }) => theme.colors.text};
+  font-weight: 600;
+`;
+
+export const CardRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid ${({ theme }) => theme.colors.background};
+  
+  &:last-child {
+    border-bottom: none;
+  }
+`;
+
+export const CardLabel = styled.span`
+  font-size: 0.875rem;
+  color: ${({ theme }) => theme.colors.textLight};
+  font-weight: 500;
+`;
+
+export const CardValue = styled.span`
+  font-size: 0.875rem;
+  color: ${({ theme }) => theme.colors.text};
+  font-weight: 600;
+`;
+
+export const CardActions = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid ${({ theme }) => theme.colors.background};
 `;

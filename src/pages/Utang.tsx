@@ -3,7 +3,8 @@ import { useDebtList, useCreateDebt, useUpdateDebt, useDeleteDebt } from "../hoo
 import type { Debt, CreateDebt } from "../types/debt";
 import { 
   UtangWrapper, Header, Title, AddButton, Table, Th, Td, Status, ActionButton, 
-  ModalOverlay, ModalContent, FormGroup, FormActions, Input, Select 
+  ModalOverlay, ModalContent, FormGroup, FormActions, Input, Select,
+  MobileCardList, DebtCard, CardHeader, DebtorName, CardRow, CardLabel, CardValue, CardActions
 } from './utang/styles';
 import { LoadingWrapper, Spinner, ErrorWrapper, ErrorIcon, ErrorMessage } from '../components/dashboard/styles';
 
@@ -92,6 +93,7 @@ const Utang = () => {
         </AddButton>
       </Header>
       
+      {/* Desktop Table View */}
       <Table>
         <thead>
           <tr>
@@ -120,6 +122,43 @@ const Utang = () => {
           ))}
         </tbody>
       </Table>
+
+      {/* Mobile Card View */}
+      <MobileCardList>
+        {debts.map((debt) => (
+          <DebtCard key={debt.id}>
+            <CardHeader>
+              <DebtorName>{debt.debtor}</DebtorName>
+              <Status status={debt.status}>{debt.status}</Status>
+            </CardHeader>
+            <CardRow>
+              <CardLabel>Amount</CardLabel>
+              <CardValue>₱{debt.amount.toFixed(2)}</CardValue>
+            </CardRow>
+            <CardRow>
+              <CardLabel>Due Date</CardLabel>
+              <CardValue>{new Date(debt.dueDate).toLocaleDateString()}</CardValue>
+            </CardRow>
+            {debt.status === 'Paid' && debt.paidDate && (
+              <CardRow>
+                <CardLabel>Date Paid</CardLabel>
+                <CardValue>{new Date(debt.paidDate).toLocaleDateString()}</CardValue>
+              </CardRow>
+            )}
+            {debt.description && (
+              <CardRow>
+                <CardLabel>Description</CardLabel>
+                <CardValue>{debt.description}</CardValue>
+              </CardRow>
+            )}
+            <CardActions>
+              <ActionButton onClick={() => handleEdit(debt)}>Edit</ActionButton>
+              <ActionButton className="delete" onClick={() => handleDelete(debt)}>Delete</ActionButton>
+              {debt.status === 'Unpaid' && <ActionButton className="paid" onClick={() => handlePaid(debt)}>Mark Paid</ActionButton>}
+            </CardActions>
+          </DebtCard>
+        ))}
+      </MobileCardList>
 
       {editingDebt && (
         <ModalOverlay>
