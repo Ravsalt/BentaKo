@@ -1,14 +1,23 @@
-import { FiPlusCircle, FiWifi, FiWifiOff } from 'react-icons/fi';
-import styled, { css } from 'styled-components';
+import { FiWifi, FiWifiOff } from 'react-icons/fi';
+import styled from 'styled-components';
 
 export const BottomBarContainer = styled.footer`
-  grid-column: 2;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0 2rem;
   background: ${({ theme }) => theme.colors.white};
   border-top: 1px solid #eee;
+  
+  /* Desktop */
+  @media (min-width: 768px) {
+    grid-column: 2;
+  }
+  
+  /* Mobile: hide desktop bottom bar */
+  @media (max-width: 767px) {
+    display: none;
+  }
 `;
 
 export const AddItemButton = styled.button`
@@ -98,24 +107,16 @@ export const SyncStatus = styled.div<{ $isOnline: boolean }>`
 `;
 
 interface BottomBarProps {
-  onAddItem: () => void;
   isOnline: boolean;
-  addButtonText?: string;
   className?: string;
 }
 
 export const BottomBar: React.FC<BottomBarProps> = ({
-  onAddItem,
   isOnline,
-  addButtonText = 'Add New Item',
-  className = ''
+  className = ''  
 }) => {
   return (
     <BottomBarContainer className={className}>
-      <AddItemButton onClick={onAddItem}>
-        <FiPlusCircle />
-        <span>{addButtonText}</span>
-      </AddItemButton>
       
       <SyncStatus $isOnline={isOnline}>
         {isOnline ? <FiWifi /> : <FiWifiOff />}
