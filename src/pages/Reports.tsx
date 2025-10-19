@@ -2,44 +2,22 @@ import React from "react";
 import { useInventoryList, useLowStockItems } from "../hooks/useInventory";
 import { useDebtList } from "../hooks/useDebt";
 import { useSalesList } from "../hooks/useSales";
+import {
+  PageContainer, HeaderSection, PageTitle, Subtitle, ReportsGrid, Card,
+  CardHeader, SectionTitle, IconWrapper, InsightText, SummaryContainer,
+  SummaryItem, LabelContainer, ItemIcon, SummaryLabel, ValueContainer,
+  SummaryValue, TrendIndicator, FooterNote, FooterText, LoadingSpinner, ErrorText
+} from './reports/newStyles';
 
 // Error component for displaying error states
 const ErrorIndicator = ({ message }: { message: string }) => (
-  <span style={{ color: '#ef4444', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.9rem' }}>
+  <ErrorText>
     <span>⚠️</span>
     <span>{message}</span>
-  </span>
+  </ErrorText>
 );
 
-
-const Spinner = () => (
-  <svg
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <circle
-      cx="12"
-      cy="12"
-      r="10"
-      stroke="#09f"
-      strokeWidth="4"
-      fill="none"
-      strokeDasharray="15 80"
-      strokeLinecap="round"
-    >
-      <animateTransform
-        attributeName="transform"
-        type="rotate"
-        from="0 12 12"
-        to="360 12 12"
-        dur="1s"
-        repeatCount="indefinite"
-      />
-    </circle>
-  </svg>
-);
+const Spinner = () => <LoadingSpinner />;
 
 // Helper functions for insights
 const getInventoryInsight = (_total: number, lowStock: number, outOfStock: number, inventoryValue?: number) => {
@@ -332,87 +310,73 @@ export default function Reports() {
   ];
 
   return (
-    <div style={pageContainer}>
-      <div style={headerSection}>
-        <h1 style={pageTitle}>📈 Business Overview</h1>
-        <p style={subtitle}>Here's a quick snapshot of how your business is doing today</p>
-      </div>
+    <PageContainer>
+      <HeaderSection>
+        <PageTitle>📈 Business Overview</PageTitle>
+        <Subtitle>Here's a quick snapshot of how your business is doing today</Subtitle>
+      </HeaderSection>
       
-      <div style={reportsGrid}>
+      <ReportsGrid>
         {reportsData.map((report) => (
-          <div key={report.category} style={{...card, borderTop: `4px solid ${report.color}`}}>
-            <div style={cardHeader}>
-              <h2 style={sectionTitle}>
-                <span style={{ marginRight: "0.5rem", fontSize: "1.75rem" }}>{report.icon}</span>
+          <Card key={report.category} borderColor={report.color}>
+            <CardHeader>
+              <SectionTitle>
+                <IconWrapper>{report.icon}</IconWrapper>
                 {report.category}
-              </h2>
-              <p style={insightText}>{report.insight}</p>
-            </div>
+              </SectionTitle>
+              <InsightText>{report.insight}</InsightText>
+            </CardHeader>
             
-            <div style={summaryContainer}>
+            <SummaryContainer>
               {report.summary.map((item: SummaryItem) => {
                 const hasHighlight = 'highlight' in item ? item.highlight : false;
                 const hasTrend = 'trend' in item && item.trend !== undefined;
                 
                 return (
-                  <div 
+                  <SummaryItem 
                     key={item.label} 
-                    style={{
-                      ...summaryItem,
-                      borderLeft: `4px solid ${report.color}`,
-                      position: 'relative',
-                      overflow: 'hidden',
-                    }}
+                    borderColor={report.color}
+                    highlight={hasHighlight}
                   >
-                    {/* Highlight overlay */}
-                    {hasHighlight && <div style={highlightStyle(true)} />}
+                    <LabelContainer>
+                      <ItemIcon>{item.icon}</ItemIcon>
+                      <SummaryLabel>{item.label}</SummaryLabel>
+                    </LabelContainer>
                     
-                    <div style={labelContainer}>
-                      <span style={itemIcon}>{item.icon}</span>
-                      <span style={summaryLabel}>{item.label}</span>
-                    </div>
-                    
-                    <span style={summaryValue}>
+                    <ValueContainer>
                       {item.isLoading ? (
                         <Spinner />
                       ) : item.error ? (
                         <ErrorIndicator message={item.error} />
                       ) : (
                         <>
-                          {('prefix' in item && item.prefix) || ''}{item.value}
+                          <SummaryValue>
+                            {('prefix' in item && item.prefix) || ''}{item.value}
+                          </SummaryValue>
                           {hasTrend && (
-                            <span style={{
-                              ...trendStyle(item.trend),
-                              display: 'flex',
-                              alignItems: 'center',
-                              gap: '0.25rem',
-                              fontSize: '0.8rem',
-                              fontWeight: 500,
-                              marginTop: '0.25rem',
-                              color: item.trend > 0 ? '#10b981' : item.trend < 0 ? '#ef4444' : '#6b7280'
-                            }}>
+                            <TrendIndicator trend={item.trend}>
                               {item.trend > 0 ? '↑' : item.trend < 0 ? '↓' : '→'}
                               {Math.abs(item.trend)}% {item.trendLabel}
-                            </span>
+                            </TrendIndicator>
                           )}
                         </>
                       )}
-                    </span>
-                  </div>
+                    </ValueContainer>
+                  </SummaryItem>
                 );
               })}
-            </div>
-          </div>
+            </SummaryContainer>
+          </Card>
         ))}
-      </div>
+      </ReportsGrid>
       
-      <div style={footerNote}>
-        <p style={footerText}>
+      <FooterNote>
+        <FooterText>
           💡 <strong>Tip:</strong> Check your inventory regularly to avoid stockouts, 
           and follow up on active debts to maintain healthy cash flow!
-        </p>
-      </div>
-    </div>
+        </FooterText>
+      </FooterNote>
+    </PageContainer>
   );
 }
 
@@ -451,150 +415,3 @@ interface ReportData {
   insight: string;
   summary: SummaryItem[];
 }
-
-const pageContainer: React.CSSProperties = {
-  padding: "2rem",
-  fontFamily: "'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif",
-  backgroundColor: "#f8f9fa",
-  minHeight: "100vh",
-};
-
-const headerSection: React.CSSProperties = {
-  textAlign: "center",
-  marginBottom: "3rem",
-};
-
-const pageTitle: React.CSSProperties = {
-  fontSize: "2.5rem",
-  fontWeight: "700",
-  color: "#2c3e50",
-  marginBottom: "0.5rem",
-};
-
-const subtitle: React.CSSProperties = {
-  fontSize: "1.1rem",
-  color: "#7f8c8d",
-  fontWeight: "400",
-};
-
-const reportsGrid: React.CSSProperties = {
-  display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))",
-  gap: "2rem",
-  marginBottom: "2rem",
-};
-
-const card: React.CSSProperties = {
-  backgroundColor: "#ffffff",
-  borderRadius: "12px",
-  padding: "2rem",
-  boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
-  transition: "transform 0.2s ease, box-shadow 0.2s ease",
-};
-
-const cardHeader: React.CSSProperties = {
-  marginBottom: "1.5rem",
-  paddingBottom: "1rem",
-  borderBottom: "2px solid #f0f0f0",
-};
-
-const sectionTitle: React.CSSProperties = {
-  fontSize: "1.4rem",
-  fontWeight: "600",
-  color: "#34495e",
-  marginBottom: "0.5rem",
-  display: "flex",
-  alignItems: "center",
-};
-
-const insightText: React.CSSProperties = {
-  fontSize: "0.95rem",
-  color: "#7f8c8d",
-  fontStyle: "italic",
-  marginTop: "0.5rem",
-};
-
-const summaryContainer: React.CSSProperties = {
-  display: "flex",
-  flexDirection: "column",
-  gap: "0.75rem",
-};
-
-const summaryItem: React.CSSProperties = {
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  padding: "1rem",
-  backgroundColor: "#f8f9fa",
-  borderRadius: "8px",
-  transition: "all 0.2s ease",
-  position: "relative",
-  overflow: "hidden",
-};
-
-
-const labelContainer: React.CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  gap: "0.5rem",
-  position: "relative",
-  zIndex: 1,
-};
-
-const itemIcon: React.CSSProperties = {
-  fontSize: "1.2rem",
-};
-
-const summaryLabel: React.CSSProperties = {
-  fontSize: "1rem",
-  color: "#555",
-  fontWeight: "500",
-};
-
-const summaryValue: React.CSSProperties = {
-  fontSize: "1.4rem",
-  fontWeight: "700",
-  color: "#2c3e50",
-  position: "relative",
-  zIndex: 1,
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "flex-end",
-};
-
-const trendStyle = (trend?: number): React.CSSProperties => ({
-  fontSize: "0.8rem",
-  fontWeight: "500",
-  color: trend === undefined ? "#6b7280" : trend > 0 ? "#10b981" : trend < 0 ? "#ef4444" : "#6b7280",
-  display: "flex",
-  alignItems: "center",
-  gap: "0.25rem",
-  marginTop: "0.25rem",
-});
-
-const highlightStyle = (highlight?: boolean): React.CSSProperties => ({
-  position: "absolute",
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0,
-  backgroundColor: highlight ? "rgba(255, 247, 205, 0.3)" : "transparent",
-  border: highlight ? "1px solid #fef08a" : "1px solid transparent",
-  borderRadius: "8px",
-  transition: "all 0.2s ease",
-});
-
-const footerNote: React.CSSProperties = {
-  marginTop: "2rem",
-  padding: "1.5rem",
-  backgroundColor: "#e8f4f8",
-  borderRadius: "8px",
-  borderLeft: "4px solid #3498db",
-};
-
-const footerText: React.CSSProperties = {
-  fontSize: "0.95rem",
-  color: "#34495e",
-  margin: "0",
-  lineHeight: "1.6",
-};
