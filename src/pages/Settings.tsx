@@ -1,10 +1,15 @@
-import React, { useContext, useState } from 'react';
-import { ThemeContext } from '../contexts/ThemeContext';
-import { FiAlertTriangle, FiX, FiCheck, FiXCircle } from 'react-icons/fi';
+import React, { useState } from 'react';
+import { FiAlertTriangle, FiX, FiCheck, FiXCircle, FiDownload, FiUpload, FiTrash2, FiSettings as FiSettingsIcon } from 'react-icons/fi';
 import { toast } from 'react-hot-toast';
+import {
+  SettingsContainer, PageHeader, PageTitle, PageSubtitle, Section, SectionHeader,
+  SectionIcon, SectionTitle, SettingItem, SettingLabel, LabelText, LabelDescription,
+  ButtonGroup, Button, FileInputLabel, HiddenFileInput, ModalOverlay, ModalContent,
+  ModalHeader, ModalIcon, ModalTitle, CloseButton, ModalBody, ModalFooter,
+  ModalButton, InfoBox, InfoText
+} from './settings/styles';
 
 export default function Settings() {
-  const { theme, setTheme } = useContext(ThemeContext);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
 
  
@@ -221,287 +226,115 @@ export default function Settings() {
   };
 
   return (
-    <div style={styles.container}>
-      <h1 style={styles.title}>Settings</h1>
+    <SettingsContainer>
+      <PageHeader>
+        <PageTitle>
+          <FiSettingsIcon />
+          Settings
+        </PageTitle>
+        <PageSubtitle>Manage your application data and preferences</PageSubtitle>
+      </PageHeader>
 
-      <div style={styles.section}>
-        <h2 style={styles.sectionTitle}>Appearance</h2>
-        <div style={styles.settingItem}>
-          <label style={styles.label}>Theme</label>
-          <div style={styles.themeSelector}>
-            <button 
-              style={theme === 'light' ? {...styles.themeButton, ...styles.activeTheme} : styles.themeButton} 
-              onClick={() => setTheme('light')}
-            >
-              Light
-            </button>
-            <button 
-              style={theme === 'dark' ? {...styles.themeButton, ...styles.activeTheme} : styles.themeButton} 
-              onClick={() => setTheme('dark')}
-            >
-              Dark
-            </button>
-          </div>
-        </div>
-      </div>
-
-      
-     
-      <div style={styles.section}>
-        <h2 style={styles.sectionTitle}>Data Management</h2>
-        <div style={styles.settingItem}>
-          <label style={styles.label}>Export Data</label>
-          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-            <button 
-              style={{ ...styles.button, backgroundColor: '#4CAF50' }} 
-              onClick={() => handleExport('csv')}
-            >
-              Export as CSV
-            </button>
-            <button 
-              style={{ ...styles.button, backgroundColor: '#2196F3' }} 
-              onClick={() => handleExport('json')}
-            >
-              Export as JSON
-            </button>
-            <label style={{
-              ...styles.button,
-              backgroundColor: '#FF9800',
-              cursor: 'pointer',
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}>
+      <Section>
+        <SectionHeader>
+          <SectionIcon>💾</SectionIcon>
+          <SectionTitle>Data Management</SectionTitle>
+        </SectionHeader>
+        
+        <SettingItem>
+          <SettingLabel>
+            <LabelText>Export Data</LabelText>
+            <LabelDescription>
+              Download your sales, inventory, and debt data as CSV or JSON
+            </LabelDescription>
+          </SettingLabel>
+          <ButtonGroup>
+            <Button variant="success" onClick={() => handleExport('csv')}>
+              <FiDownload />
+              Export CSV
+            </Button>
+            <Button variant="primary" onClick={() => handleExport('json')}>
+              <FiDownload />
+              Export JSON
+            </Button>
+          </ButtonGroup>
+        </SettingItem>
+        
+        <SettingItem>
+          <SettingLabel>
+            <LabelText>Import Data</LabelText>
+            <LabelDescription>
+              Restore your data from a previously exported file
+            </LabelDescription>
+          </SettingLabel>
+          <ButtonGroup>
+            <FileInputLabel variant="warning">
+              <FiUpload />
               Import Data
-              <input
+              <HiddenFileInput
                 type="file"
                 accept=".json,.csv"
-                style={{ display: 'none' }}
                 onChange={handleImport}
               />
-            </label>
-          </div>
-        </div>
-        <div style={styles.settingItem}>
-          
-          <label style={styles.label}>Wipe Data</label>
-          <button style={{...styles.button, ...styles.dangerButton}} onClick={handleClearData}>Wipe All Data</button>
-        </div>
-      </div>
+            </FileInputLabel>
+          </ButtonGroup>
+        </SettingItem>
+        
+        <SettingItem>
+          <SettingLabel>
+            <LabelText>Clear All Data</LabelText>
+            <LabelDescription>
+              Permanently delete all local data. This action cannot be undone.
+            </LabelDescription>
+          </SettingLabel>
+          <ButtonGroup>
+            <Button variant="danger" onClick={handleClearData}>
+              <FiTrash2 />
+              Wipe All Data
+            </Button>
+          </ButtonGroup>
+        </SettingItem>
+      </Section>
+      
+      <InfoBox>
+        <InfoText>
+          💡 <strong>Tip:</strong> Regularly export your data to keep backups. 
+          Your data is stored locally in your browser and will be lost if you clear browser data.
+        </InfoText>
+      </InfoBox>
 
       {/* Confirmation Modal */}
       {showConfirmModal && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          zIndex: 1000,
-        }}>
-          <div style={{
-            backgroundColor: theme === 'dark' ? '#2d3748' : 'white',
-            borderRadius: '12px',
-            padding: '1.5rem',
-            maxWidth: '400px',
-            width: '90%',
-            boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)',
-          }}>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              marginBottom: '1rem',
-              color: '#e53e3e',
-            }}>
-              <FiAlertTriangle size={24} style={{ marginRight: '0.5rem' }} />
-              <h3 style={{
-                margin: 0,
-                fontSize: '1.25rem',
-                fontWeight: 600,
-                color: theme === 'dark' ? 'white' : '#2d3748',
-              }}>
-                Confirm Action
-              </h3>
-              <button
-                onClick={() => setShowConfirmModal(false)}
-                style={{
-                  marginLeft: 'auto',
-                  background: 'none',
-                  border: 'none',
-                  color: theme === 'dark' ? '#a0aec0' : '#718096',
-                  cursor: 'pointer',
-                  padding: '0.25rem',
-                  borderRadius: '4px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
+        <ModalOverlay>
+          <ModalContent>
+            <ModalHeader>
+              <ModalIcon>
+                <FiAlertTriangle size={24} />
+              </ModalIcon>
+              <ModalTitle>Confirm Action</ModalTitle>
+              <CloseButton onClick={() => setShowConfirmModal(false)}>
                 <FiX size={20} />
-              </button>
-            </div>
+              </CloseButton>
+            </ModalHeader>
 
-            <p style={{
-              margin: '0 0 1.5rem',
-              color: theme === 'dark' ? '#e2e8f0' : '#4a5568',
-              lineHeight: '1.5',
-            }}>
+            <ModalBody>
               This will permanently delete all local data including sales, inventory, and settings.
               <strong> This action cannot be undone.</strong>
-            </p>
+            </ModalBody>
 
-            <div style={{
-              display: 'flex',
-              justifyContent: 'flex-end',
-              gap: '0.75rem',
-            }}>
-              <button
-                onClick={() => setShowConfirmModal(false)}
-                style={{
-                  padding: '0.5rem 1rem',
-                  borderRadius: '6px',
-                  border: '1px solid #cbd5e0',
-                  background: 'transparent',
-                  color: theme === 'dark' ? '#e2e8f0' : '#4a5568',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  transition: 'all 0.2s',
-                }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.backgroundColor = theme === 'dark' ? '#2d3748' : '#f7fafc';
-                  e.currentTarget.style.borderColor = theme === 'dark' ? '#4a5568' : '#a0aec0';
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.backgroundColor = 'transparent';
-                  e.currentTarget.style.borderColor = theme === 'dark' ? '#4a5568' : '#cbd5e0';
-                }}
-              >
+            <ModalFooter>
+              <ModalButton variant="cancel" onClick={() => setShowConfirmModal(false)}>
                 <FiXCircle />
                 Cancel
-              </button>
-              <button
-                onClick={confirmClearData}
-                style={{
-                  padding: '0.5rem 1rem',
-                  borderRadius: '6px',
-                  border: '1px solid #e53e3e',
-                  background: '#e53e3e',
-                  color: 'white',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  transition: 'all 0.2s',
-                }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.backgroundColor = '#c53030';
-                  e.currentTarget.style.borderColor = '#c53030';
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.backgroundColor = '#e53e3e';
-                  e.currentTarget.style.borderColor = '#e53e3e';
-                }}
-              >
+              </ModalButton>
+              <ModalButton variant="danger" onClick={confirmClearData}>
                 <FiCheck />
                 Clear All Data
-              </button>
-            </div>
-          </div>
-        </div>
+              </ModalButton>
+            </ModalFooter>
+          </ModalContent>
+        </ModalOverlay>
       )}
-    </div>
+    </SettingsContainer>
   );
 }
-
-const styles: { [key: string]: React.CSSProperties } = {
-  container: {
-    padding: '2rem',
-    fontFamily: "'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif",
-    backgroundColor: '#f4f7f9',
-    minHeight: '100vh',
-  },
-  title: {
-    fontSize: '2.5rem',
-    fontWeight: 'bold',
-    color: '#2c3e50',
-    marginBottom: '2rem',
-  },
-  section: {
-    backgroundColor: '#ffffff',
-    borderRadius: '12px',
-    padding: '2rem',
-    marginBottom: '2rem',
-    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
-  },
-  sectionTitle: {
-    fontSize: '1.5rem',
-    fontWeight: 600,
-    color: '#34495e',
-    marginBottom: '1.5rem',
-    borderBottom: '1px solid #eee',
-    paddingBottom: '1rem',
-  },
-  settingItem: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '1rem 0',
-  },
-  label: {
-    fontSize: '1rem',
-    color: '#555',
-  },
-  input: {
-    fontSize: '1rem',
-    padding: '0.5rem 1rem',
-    borderRadius: '6px',
-    border: '1px solid #ddd',
-    width: '80px',
-    textAlign: 'center',
-  },
-  button: {
-    fontSize: '1rem',
-    padding: '0.5rem 1.5rem',
-    borderRadius: '6px',
-    border: 'none',
-    backgroundColor: '#4a90e2',
-    color: 'white',
-    cursor: 'pointer',
-    margin: '0 0.5rem',
-  },
-  dangerButton: {
-    backgroundColor: '#f44336',
-  },
-  themeSelector: {
-    display: 'flex',
-    border: '1px solid #ddd',
-    borderRadius: '6px',
-    overflow: 'hidden',
-  },
-  themeButton: {
-    fontSize: '1rem',
-    padding: '0.5rem 1.5rem',
-    border: 'none',
-    backgroundColor: 'transparent',
-    cursor: 'pointer',
-  },
-  activeTheme: {
-    backgroundColor: '#4a90e2',
-    color: 'white',
-  },
-  toggleButton: {
-    // Basic toggle button style
-    fontSize: '1rem',
-    padding: '0.5rem 1.5rem',
-    borderRadius: '6px',
-    border: '1px solid #ddd',
-    backgroundColor: '#eee',
-    cursor: 'pointer',
-  }
-};
