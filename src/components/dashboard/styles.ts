@@ -100,7 +100,7 @@ export const CartHeader = styled.div`
   align-items: center;
   padding: 1rem;
   background: ${({ theme }) => theme.colors.background};
-  border-top: 1px solid ${({ theme }) => theme.colors.border};
+  border-top: 1px solid ${({ theme }) => theme.colors.primary};
   position: sticky;
   top: 0;
   z-index: 1;
