@@ -2,22 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import type { InventoryItem, CreateInventoryItem, UpdateInventoryItem } from '../types/inventory';
 
 // Simple in-memory storage for prototyping
-let inventoryDB: InventoryItem[] = [
-  {
-    id: '1',
-    name: 'Coke 1.5L',
-    description: '1.5L Bottle of Coca-Cola',
-    price: 70,
-    stock: 24,
-    category: 'Beverages',
-    image: '🥤',
-    barcode: '123456789012',
-    minStockLevel: 5,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  // Add more sample items as needed
-];
+let inventoryDB: InventoryItem[] = [];
 
 // Helper function to save to localStorage
 const saveToStorage = () => {
