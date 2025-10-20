@@ -11,6 +11,7 @@ import Reports from './pages/Reports';
 import UtangList from './pages/Utang';
 import Settings from './pages/Settings';
 import Mobile from './pages/Mobile';
+import Transactions from './pages/Transactions';
 
 // Import layout components
 import { AppContainer } from './components/layout/AppContainer';
@@ -48,6 +49,7 @@ const AppContent = () => {
           <Route path="/utang" element={<UtangList />} />
           <Route path="/mobile" element={<Mobile />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/transactions" element={<Transactions />} />
         </Routes>
       </MainContent>
       
