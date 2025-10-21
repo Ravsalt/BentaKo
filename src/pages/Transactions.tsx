@@ -30,17 +30,16 @@ const Transactions: React.FC = () => {
   // Transform sales data into transactions
   useEffect(() => {
     if (salesData) {
-      // Group sales by transaction (assuming sales have a transactionId or similar)
-      // This is a simplified example - adjust according to your actual data structure
+      // Group sales by transaction ID (using date as a proxy)
       const transactionMap = new Map<string, Transaction>();
       
       salesData.forEach((sale: any) => {
-        const transactionDate = new Date(sale.date).toISOString().split('T')[0];
+        const transactionId = sale.date; // Use the exact date string as the transaction ID
         
-        if (!transactionMap.has(transactionDate)) {
-          transactionMap.set(transactionDate, {
-            id: transactionDate,
-            date: transactionDate,
+        if (!transactionMap.has(transactionId)) {
+          transactionMap.set(transactionId, {
+            id: transactionId,
+            date: sale.date,
             items: [],
             total: 0,
             paymentMethod: 'Cash', // Default or get from your data
@@ -48,7 +47,7 @@ const Transactions: React.FC = () => {
           });
         }
         
-        const transaction = transactionMap.get(transactionDate)!;
+        const transaction = transactionMap.get(transactionId)!;
         transaction.items.push({
           id: sale.id,
           name: sale.name,

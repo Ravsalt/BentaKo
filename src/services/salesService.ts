@@ -26,7 +26,8 @@ export const getSales = (): Sale[] => {
 export const addSale = (cart: CartItem[]): void => {
   try {
     const existingSales = getSales();
-    const newSale: Sale[] = cart.map(item => ({ ...item, date: new Date().toISOString() }));
+    const saleDate = new Date().toISOString();
+    const newSale: Sale[] = cart.map(item => ({ ...item, date: saleDate }));
     const updatedSales = [...existingSales, ...newSale];
     localStorage.setItem(SALES_STORAGE_KEY, JSON.stringify(updatedSales));
   } catch (error) {
